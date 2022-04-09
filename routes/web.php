@@ -13,6 +13,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\MainController::class, 'index'])->name('home');
+Route::post('/get/{pln}', [App\Http\Controllers\MainController::class, 'get_api'])->name('home');
