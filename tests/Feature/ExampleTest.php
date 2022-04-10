@@ -42,4 +42,18 @@ class ExampleTest extends TestCase
 
         //Jeśli testy pomyślne to połączenie z api jest poprawne!
     }
+
+    public function test_api_call_history()
+    {
+        //request do metody
+        $response = $this->call('GET','/get_api_history');
+
+        //Sprawdź czy api zwaraca te waluty w requeście , jeśli nie to błędne połączenie , albo błąd z serwerem po stronie API
+        $response->assertStatus(200);
+        $response->assertSee('EUR');
+        $response->assertSee('USD');
+        $response->assertSee('GBP');
+
+        //Jeśli testy pomyślne to połączenie z api jest poprawne!
+    }
 }

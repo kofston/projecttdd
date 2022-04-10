@@ -18,6 +18,11 @@
         src="https://code.jquery.com/jquery-3.6.0.js"
         integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
         crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
     <style>
         body {
             font-family: Nunito, sans-serif;
@@ -45,21 +50,53 @@
         <h1>Kantor online - NBP</h1>
         <h3>Sprawdź aktualne kursy walut...</h3>
         <div class="form-control">
-            <input type="number" step="0.01" min="0" placeholder="Wpisz wartość kwoty w złotówkach">
+            <input id="numbr" type="number" step="0.01" min="0" placeholder="Wpisz wartość kwoty w złotówkach">
             <button class="btn btn-info" id="count">Przelicz</button>
+            <br>
+            <div id="response">
+                <h5>Kliknij przelicz aby przeliczyć kurs</h5>
+            </div>
+            <div id="response_history">
+                <div id="chart_usd" style="height: 200px;"></div>
+                <div id="chart_eur" style="height: 200px;"></div>
+                <div id="chart_funt" style="height: 200px;"></div>
+            </div>
         </div>
     </div>
 </div>
 <script>
-    $("#count").click(function() {
-        let val = $(this).val();
+
+    $("#count").unbind().click(function() {
+        let val = $("#numbr").val();
         if(val!='')
         {
-
+            $.ajax({
+                beforeSend:function (){
+                    $("#response").html("<h1>WCZYTYWANIE...</h1>");
+                },
+                url: "/get_api/"+val,
+                success:function (result){
+                    if(result!='0')
+                    {
+                        if(result[0].effectiveDate.length>0)
+                        {
+                            let day = result[0].effectiveDate;
+                            console.log(result[0]);
+                            let usd = result[0].rates[1].mid,eur = result[0].rates[7].mid,funt = result[0].rates[10].mid;
+                            let finish_usd = (parseFloat(val)/parseFloat(usd)).toFixed(2),finish_euro = (parseFloat(val)/parseFloat(eur)).toFixed(2),finish_funt = (parseFloat(val)/parseFloat(funt)).toFixed(2);
+                            $("#response").html('<table width="100%"style="border:1pxsolidblack;"><tr><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://cdn-icons-png.flaticon.com/512/555/555526.png"/><h3>Dolar</h3></th><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://www.flagi-24.pl/images/panstwa/unia_europejska.png"/><h3>Euro</h3></th><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Flag_of_Great_Britain_%281707%E2%80%931800%29.svg/1024px-Flag_of_Great_Britain_%281707%E2%80%931800%29.svg.png"/><h3>Funt</h3></th></tr><tr><td style="border:1pxsolidblack;"colspan="3">Dane z dnia: '+day+'</td></tr><tr><td style="border:1pxsolidblack;"colspan="3">Średnikurs:</td></tr><tr><td style="border:1pxsolidblack;">'+usd+'</td><td style="border:1pxsolidblack;">'+eur+'</td><td style="border:1pxsolidblack;">'+funt+'</td></tr><tr><td style="border:1pxsolidblack;font-size:20px;"colspan="3">Wyliczenia:</td></tr><tr><td style="border:1pxsolidblack;font-size:22px;">'+finish_usd+' zł</td><td style="border:1pxsolidblack;font-size:22px;">'+finish_euro+' zł</td><td style="border:1pxsolidblack;font-size:22px;">'+finish_funt+' zł</td></tr></table>');
+                        }
+                        else
+                            alert("Wystąpił problem z API");
+                    }
+                    else
+                        alert("Wpisano niepoprawną kwotę / wystąpił problem z API");
+                }
+            });
         }
         else
         {
-
+            alert("Nie podano wartości lub podana wartość nie jest liczbą!");
         }
     });
 </script>

@@ -13,6 +13,11 @@ class MainController extends Controller
         return view('welcome');
     }
 
+    public function pre($string = '')
+    {
+        echo '<pre>' . print_r($string, TRUE) . '</pre>';
+    }
+
     public function get_api($pln=NULL)
     {
         if(isset($pln))
@@ -24,8 +29,7 @@ class MainController extends Controller
             curl_close($ch);
             try {
                 $decode = json_decode($data);
-                echo $decode;
-
+                return $decode;
             }
             catch (Exception $e)
             {
@@ -35,4 +39,5 @@ class MainController extends Controller
         else
             return 0;
     }
+
 }
