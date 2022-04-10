@@ -57,15 +57,41 @@
                 <h5>Kliknij przelicz aby przeliczyć kurs</h5>
             </div>
             <div id="response_history">
-                <div id="chart_usd" style="height: 200px;"></div>
-                <div id="chart_eur" style="height: 200px;"></div>
-                <div id="chart_funt" style="height: 200px;"></div>
+                <h5>Historia USD:</h5>
+                <div id="chart_usd" style="height: 200px;width: 100%;"></div>
+                <h5>Historia EUR:</h5>
+                <div id="chart_eur" style="height: 200px;width: 100%;"></div>
+                <h5>Historia GBP:</h5>
+                <div id="chart_funt" style="height: 200px;width: 100%;"></div>
             </div>
         </div>
     </div>
 </div>
 <script>
-
+function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
+{
+    new Morris.Line({
+        element: 'chart_usd',
+        data: CHAR_usd,
+        xkey: 'year',
+        ykeys: ['value'],
+        labels: ['Value']
+    });
+    new Morris.Line({
+        element: 'chart_eur',
+        data: CHAR_eur,
+        xkey: 'year',
+        ykeys: ['value'],
+        labels: ['Value']
+    });
+    new Morris.Line({
+        element: 'chart_funt',
+        data: CHAR_funt,
+        xkey: 'year',
+        ykeys: ['value'],
+        labels: ['Value']
+    });
+}
     $("#count").unbind().click(function() {
         let val = $("#numbr").val();
         if(val!='')
@@ -85,6 +111,33 @@
                             let usd = result[0].rates[1].mid,eur = result[0].rates[7].mid,funt = result[0].rates[10].mid;
                             let finish_usd = (parseFloat(val)/parseFloat(usd)).toFixed(2),finish_euro = (parseFloat(val)/parseFloat(eur)).toFixed(2),finish_funt = (parseFloat(val)/parseFloat(funt)).toFixed(2);
                             $("#response").html('<table width="100%"style="border:1pxsolidblack;"><tr><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://cdn-icons-png.flaticon.com/512/555/555526.png"/><h3>Dolar</h3></th><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://www.flagi-24.pl/images/panstwa/unia_europejska.png"/><h3>Euro</h3></th><th style="border:1pxsolidblack;"class="text-center"><img width="100px"src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Flag_of_Great_Britain_%281707%E2%80%931800%29.svg/1024px-Flag_of_Great_Britain_%281707%E2%80%931800%29.svg.png"/><h3>Funt</h3></th></tr><tr><td style="border:1pxsolidblack;"colspan="3">Dane z dnia: '+day+'</td></tr><tr><td style="border:1pxsolidblack;"colspan="3">Średnikurs:</td></tr><tr><td style="border:1pxsolidblack;">'+usd+'</td><td style="border:1pxsolidblack;">'+eur+'</td><td style="border:1pxsolidblack;">'+funt+'</td></tr><tr><td style="border:1pxsolidblack;font-size:20px;"colspan="3">Wyliczenia:</td></tr><tr><td style="border:1pxsolidblack;font-size:22px;">'+finish_usd+' zł</td><td style="border:1pxsolidblack;font-size:22px;">'+finish_euro+' zł</td><td style="border:1pxsolidblack;font-size:22px;">'+finish_funt+' zł</td></tr></table>');
+                        }
+                        else
+                            alert("Wystąpił problem z API");
+                    }
+                    else
+                        alert("Wpisano niepoprawną kwotę / wystąpił problem z API");
+                }
+            });
+
+            $.ajax({
+                url: "/get_api_history/",
+                success:function (result){
+                    if(result!='0')
+                    {
+                        if(result[0].effectiveDate.length>0)
+                        {
+                            var CHAR_usd = [],CHAR_eur = [],CHAR_funt=[];
+
+                            $(result).each(function(index) {
+                                let day = result[index].effectiveDate;
+                                let usd = result[index].rates[1].mid,eur = result[index].rates[7].mid,funt = result[index].rates[10].mid;
+                                let obj_usd = {year:day,value:usd},obj_eur = {year:day,value:eur},obj_funt = {year:day,value:funt};
+                                CHAR_usd.push(obj_usd);
+                                CHAR_eur.push(obj_eur);
+                                CHAR_funt.push(obj_funt);
+                            });
+                            setTimeout(drawChart(CHAR_usd,CHAR_eur,CHAR_funt), 1000);
                         }
                         else
                             alert("Wystąpił problem z API");
