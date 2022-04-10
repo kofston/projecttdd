@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\MainController::class, 'index'])->name('home');
-Route::post('/get/{pln}', [App\Http\Controllers\MainController::class, 'get_api'])->name('home');
+Route::get('/get_api/{pln}', [App\Http\Controllers\MainController::class, 'get_api'])->name('home');

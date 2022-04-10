@@ -24,4 +24,22 @@ class ExampleTest extends TestCase
         $response = $this->view('welcome');
         $response->assertSee('div');
     }
+    public function test_api_call()
+    {
+        //Wprowadź wartość (walutę) do testów
+        $get_number = '15.75';
+
+        //Sprawdź czy podana liczba, jeśli nie to failed
+        $this->assertIsNumeric($get_number);
+
+        //request do metody
+        $response = $this->call('GET','/get_api/'.$get_number);
+
+        //Sprawdź czy api zwaraca te waluty w requeście , jeśli nie to błędne połączenie , albo błąd z serwerem po stronie API
+        $response->assertSee('EUR');
+        $response->assertSee('USD');
+        $response->assertSee('GBP');
+
+        //Jeśli testy pomyślne to połączenie z api jest poprawne!
+    }
 }
