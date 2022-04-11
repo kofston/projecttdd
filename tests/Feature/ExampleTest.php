@@ -56,4 +56,38 @@ class ExampleTest extends TestCase
 
         //Jeśli testy pomyślne to połączenie z api jest poprawne!
     }
+
+    public function test_toword()
+    {
+        //Wprowadź wartość (walutę) do testów
+        $get_number = '25,54';
+        //Sprawdź czy podana liczba, jeśli nie to failed
+        $this->assertIsNumeric(str_replace(',','.',$get_number));
+        //Sprawdź czy wpisana kwota jest większa od 0
+        $this->assertGreaterThan(0,$get_number);
+        //request do metody
+        $response = $this->get('http://127.0.0.1:8000/toword/'.$get_number);
+        //Sprawdź czy istnieje
+        $this->assertEquals(200,$response->getStatusCode());
+        //Sprawdź czy wróciło grosze (zawsze wróci /100)
+        $response->assertSee('/100');
+
+        //Teraz zrób testowy request dla 129 zł 15 groszy
+        $response2 = $this->get('http://127.0.0.1:8000/toword/129,15');
+        //Poprawna oczekiwana odpowiedź / grosze
+        $response2->assertSee("15/100");
+        //Poprawna oczekiwana odpowiedź / zł
+        $response2->assertSee("sto dwadzieścia dziewięć złotych");
+        //Wywyołaj z 0
+        $response3 = $this->get('http://127.0.0.1:8000/toword/0');
+        $response3->assertSee("ZERO");
+        //Wywyołaj z liczbą ale z kropką (będzie obsługiwany tylko separator przecinka)
+        $response3 = $this->get('http://127.0.0.1:8000/toword/1.99');
+        //Poniżej poprawny zwrot
+        $response3->assertSee(" jeden złoty  99/100");
+        $response4 = $this->get('http://127.0.0.1:8000/toword/AlaMaKota');
+        $response4->assertSee("TO_NIE_LICZBA!");
+
+
+    }
 }

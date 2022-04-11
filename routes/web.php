@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\MainController::class, 'index'])->name('home');
-Route::get('/get_api/{pln}', [App\Http\Controllers\MainController::class, 'get_api'])->name('home');
-Route::get('/get_api_history', [App\Http\Controllers\MainController::class, 'get_api_history'])->name('home');
+Route::get('/get_api/{pln}', [App\Http\Controllers\MainController::class, 'get_api'])->name('get_api');
+Route::get('/get_api_history', [App\Http\Controllers\MainController::class, 'get_api_history'])->name('get_api_history');
+Route::get('/toword/{pln}', [App\Http\Controllers\MainController::class, 'toword'])->name('toword');
