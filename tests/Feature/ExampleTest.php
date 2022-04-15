@@ -90,4 +90,15 @@ class ExampleTest extends TestCase
 
 
     }
+    public function test_toword_anothercurrency()
+    {
+        $response1 = $this->get('http://127.0.0.1:8000/toword/129,15/1');
+        $response1->assertSee("dolarów");
+
+        $response2 = $this->get('http://127.0.0.1:8000/toword/129,15/2');
+        $response2->assertSee("euro");
+
+        $response3 = $this->get('http://127.0.0.1:8000/toword/129,15/3');
+        $response3->assertSee("funtów");
+    }
 }
