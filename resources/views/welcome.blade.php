@@ -49,6 +49,7 @@
     <div class="container mx-auto p-6 text-center" style="margin-top: 100px;">
         <h1>Kantor online - NBP</h1>
         <h3>Sprawdź aktualne kursy walut...</h3>
+        <h5>Wpisano : <span id="slownie_pl"></span></h5>
         <div class="form-control">
             <input id="numbr" type="number" step="0.01" min="0" placeholder="Wpisz wartość kwoty w złotówkach">
             <button class="btn btn-info" id="count">Przelicz</button>
@@ -73,6 +74,9 @@
 <script>
 function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
 {
+    $("#chart_usd").empty();
+    $("#chart_eur").empty();
+    $("#chart_funt").empty();
     new Morris.Line({
         element: 'chart_usd',
         data: CHAR_usd,
@@ -122,7 +126,7 @@ function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
                                 {
                                     case 0:
                                         $.ajax({
-                                            url: "/toword/"+finish_usd,
+                                            url: "/toword/"+finish_usd+"/1",
                                             success:function (result){
                                                 $("#word_usd").html("<strong>"+result+"</strong>");
                                             }
@@ -130,7 +134,7 @@ function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
                                         break;
                                     case 1:
                                         $.ajax({
-                                            url: "/toword/"+finish_euro,
+                                            url: "/toword/"+finish_euro+"/2",
                                             success:function (result){
                                                 $("#word_eur").html("<strong>"+result+"</strong>");
                                             }
@@ -138,7 +142,7 @@ function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
                                         break;
                                     case 2:
                                         $.ajax({
-                                            url: "/toword/"+finish_funt,
+                                            url: "/toword/"+finish_funt+"/3",
                                             success:function (result){
                                                 $("#word_gbp").html("<strong>"+result+"</strong>");
                                             }
@@ -146,6 +150,12 @@ function drawChart(CHAR_usd,CHAR_eur,CHAR_funt)
                                         break;
                                 }
                             }
+                            $.ajax({
+                                url: "/toword/"+val,
+                                success:function (result){
+                                    $("#slownie_pl").html("<strong>"+result+"</strong>");
+                                }
+                            });
                         }
                         else
                             alert("Wystąpił problem z API");

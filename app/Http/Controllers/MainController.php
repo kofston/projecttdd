@@ -44,7 +44,6 @@ class MainController extends Controller
     {
             $today = date('Y-m-d');
             $month_before = date('Y-m-d',strtotime('- 1 month'));
-
             $ch = curl_init("http://api.nbp.pl/api/exchangerates/tables/A/".$month_before."/".$today."");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -60,21 +59,16 @@ class MainController extends Controller
             }
     }
 
-    public function toword($pln=NULL)
+    public function toword($pln=NULL,$type=NULL)
     {
         if(isset($pln))
         {
-            $pln = str_replace('.',',',$pln);
-            $kw = $pln;
-            $l_pad='';
-            $kw_slow='';
-            $kw_w='';
-
+            $kw  = $pln = str_replace('.',',',$pln);
+            $l_pad=$kw_slow=$kw_w='';
             $t_a = array('','sto','dwieście','trzysta','czterysta','pięćset','sześćset','siedemset','osiemset','dziewięćset');
             $t_b = array('','dziesięć','dwadzieścia','trzydzieści','czterdzieści','pięćdziesiąt','sześćdziesiąt','siedemdziesiąt','osiemdziesiąt','dziewięćdziesiąt');
             $t_c = array('','jeden','dwa','trzy','cztery','pięć','sześć','siedem','osiem','dziewięć');
             $t_d = array('dziesięć','jedenaście','dwanaście','trzynaście','czternaście','piętnaście','szesnaście','siednaście','osiemnaście','dziewiętnaście');
-
             $t_kw_15 = array('septyliard','septyliardów','septyliardy');
             $t_kw_14 = array('septylion','septylionów','septyliony');
             $t_kw_13 = array('sekstyliard','sekstyliardów','sekstyliardy');
@@ -90,13 +84,25 @@ class MainController extends Controller
             $t_kw_3 = array('miliard','miliardów','miliardy');
             $t_kw_2 = array('milion','milionów','miliony');
             $t_kw_1 = array('tysiąc','tysięcy','tysiące');
-            $t_kw_0 = array('złoty','złotych','złote');
+            switch($type)
+            {
+                case 1:
+                    $t_kw_0 = array('dolar','dolarów','dolary');
+                    break;
+                case 2:
+                    $t_kw_0 = array('euro','euro','euro');
+                    break;
+                case 3:
+                    $t_kw_0 = array('funt','funtów','funty');
+                    break;
+                default:
+                    $t_kw_0 = array('złoty','złotych','złote');
+                    break;
+            }
 
             if ($kw!='') {
                 if(!is_numeric(str_replace(',','.',$pln)))
-                {
                     return "TO_NIE_LICZBA!";
-                }
 
                 if($kw>0)
                 {
